@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Reading RGB values</title>
+</head>
+<body>
+
+<script src="/socket.io.js"></script>
+<script>
+  var socket = io('http://localhost');
+
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+
+</script>
+
+Loaded
+
+</body>
+</html>
