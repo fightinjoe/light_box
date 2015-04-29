@@ -31,11 +31,13 @@ function handler (req, res) {
   });
 }
 
-io.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
-  });
+var socket = null;
+io.on('connection', function (s) {
+	socket = s;
+  // socket.emit('news', { hello: 'world' });
+  // socket.on('my other event', function (data) {
+  //   console.log(data);
+  // });
 });
 
 
@@ -75,7 +77,10 @@ function showPortOpen() {
 }
  
 function saveLatestData(data) {
-   console.log(data);
+   console.log(socket ? 'no socket' : data);
+   // data = JSON.parse(data);
+   data = data.split(',');
+   socket && socket.emit('RGB', { hex: 'rgb('+data[0]+','+data[1]+','+data[2]+')' });
 }
  
 function showPortClose() {

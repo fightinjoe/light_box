@@ -2,21 +2,30 @@
 <html>
 <head>
 	<title>Reading RGB values</title>
+	<style type="text/css">
+	body {
+		background: black; text: silver;
+	}
+	</style>
 </head>
 <body>
 
+<div style="width: 100px; height:100px;" id="color"></div>
+
 <script src="/socket.io.js"></script>
 <script>
+  var box = document.querySelector('#color');
+
   var socket = io('http://localhost');
 
-  socket.on('news', function (data) {
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
+  socket.on('RGB', function (data) {
+    console.log(data.hex);
+    // box.style.backgroundColor = "Red"
+    box.style.backgroundColor = data.hex;
+    // socket.emit('my other event', { my: 'data' });
   });
 
 </script>
-
-Loaded
 
 </body>
 </html>
