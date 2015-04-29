@@ -1,3 +1,13 @@
+/*
+36,83,109 - blue
+105,90,40 - yellow
+146,54,45 - red
+40,98,89  - aqua
+58,117,51 - green
+34,89,102 - blue
+104,69,69 - pink
+*/
+
 /*== Setup HTTP server ==*/
 var servi = require('servi');
 var html_server = new servi(true); // servi instance
@@ -75,12 +85,44 @@ function listPorts( indent ) {
 function showPortOpen() {
    console.log('port open. Data rate: ' + myPort.options.baudRate);
 }
- 
+
+function distance(a, b) {
+	return Math.sqrt( Math.pow(a[0]-b[0],2) + Math.pow(a[1]-b[1],2) + Math.pow(a[2]-b[2],2));
+} 
+
+function rgbMessage( color ) {
+	return { hex: 'rgb('+color[0]+','+color[1]+','+color[2]+')' };
+}
+
+var colors = {
+	blue:   [36,83,109],
+	yellow: [105,90,40],
+	red:    [146,54,45],
+	aqua:   [40,98,89],
+	green:  [58,117,51],
+	blue:   [34,89,102],
+	pink:   [104,69,69],
+	black:  [0,0,0]
+};
+
+var maxDistance = distance( colors.red, colors.pink ) * 0.5;
+
+function findClosestColor( color ) {
+	if( distance(color, colors.blue)   < maxDistance ) return colors.blue;
+	if( distance(color, colors.yellow) < maxDistance ) return colors.yellow;
+	if( distance(color, colors.red)    < maxDistance ) return colors.red;
+	if( distance(color, colors.aqua)   < maxDistance ) return colors.aqua;
+	if( distance(color, colors.green)  < maxDistance ) return colors.green;
+	return colors.black;
+}
+
+var lastColor = null;
+
 function saveLatestData(data) {
    console.log(socket ? 'no socket' : data);
    // data = JSON.parse(data);
    data = data.split(',');
-   socket && socket.emit('RGB', { hex: 'rgb('+data[0]+','+data[1]+','+data[2]+')' });
+   socket && socket.emit('RGB', rgbMessage( findClosestColor(data) ));
 }
  
 function showPortClose() {
