@@ -50,6 +50,13 @@ io.on('connection', function (s) {
   // });
 });
 
+/*== Midi setup ==*/
+var midi    = require('midi');
+var midiOut = new midi.output();
+// output.getPortCount();
+// output.getPortName(0);
+midiOut.openPort(0);
+
 
 
 /*== Serial port listening ==*/
@@ -105,24 +112,40 @@ var colors = {
 	black:  [0,0,0]
 };
 
+var midiChannels = {
+	blue: 1,
+	yellow: 2,
+	red: 3,
+	aqua: 4,
+	green: 5
+};
+
 var maxDistance = distance( colors.red, colors.pink ) * 0.5;
 
 function findClosestColor( color ) {
-	if( distance(color, colors.blue)   < maxDistance ) return colors.blue;
-	if( distance(color, colors.yellow) < maxDistance ) return colors.yellow;
-	if( distance(color, colors.red)    < maxDistance ) return colors.red;
-	if( distance(color, colors.aqua)   < maxDistance ) return colors.aqua;
-	if( distance(color, colors.green)  < maxDistance ) return colors.green;
-	return colors.black;
+	if( distance(color, colors.blue)   < maxDistance ) return "blue";
+	if( distance(color, colors.yellow) < maxDistance ) return "yellow";
+	if( distance(color, colors.red)    < maxDistance ) return "red";
+	if( distance(color, colors.aqua)   < maxDistance ) return "aqua";
+	if( distance(color, colors.green)  < maxDistance ) return "green";
+	return "black";
 }
 
 var lastColor = null;
 
 function saveLatestData(data) {
-   console.log(socket ? 'no socket' : data);
-   // data = JSON.parse(data);
-   data = data.split(',');
-   socket && socket.emit('RGB', rgbMessage( findClosestColor(data) ));
+    console.log(socket ? 'no socket' : data);
+    // data = JSON.parse(data);
+    data = data.split(',');
+
+    color = findClosestColor(data);
+    if( lastColor == color ) return;
+
+    socket && socket.emit('RGB', rgbMessage( colors[color] ));
+
+    var midiChannel = midiChannels[color == 'black' ? lastColor : color];
+    midiOut.sendMessage([176, midiChannel, 1]);
+    lastColor = color;
 }
  
 function showPortClose() {
