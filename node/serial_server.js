@@ -1,46 +1,8 @@
 var CONFIG = require('./config')
 
-/*== Setup HTTP server ==*/
-var servi = require('servi');
-var html_server = new servi(true);  // servi instance
-html_server.port(8080);             // port number to run the server on
- 
-// configure the server's behavior:
-html_server.serveFiles("../http");     // serve static HTML from public folder
-// html_server.route('/data', sendData); // route requests for /data to sendData()
-// now that everything is configured, start the server:
-html_server.start();
+require('./module_http');
+var SOCKET = require('./module_socket');
 
-
-
-/*== Setup socket server ==*/
-var app = require('http').createServer(handler);
-var io = require('socket.io')(app);
-var fs = require('fs');
-
-app.listen(80);
-
-function handler (req, res) {
-  fs.readFile(__dirname + '/index.html',
-  function (err, data) {
-    if (err) {
-      res.writeHead(500);
-      return res.end('Error loading index.html');
-    }
-
-    res.writeHead(200);
-    res.end(data);
-  });
-}
-
-var socket = null;
-io.on('connection', function (s) {
-	socket = s;
-  // socket.emit('news', { hello: 'world' });
-  // socket.on('my other event', function (data) {
-  //   console.log(data);
-  // });
-});
 
 /*== Midi setup ==*/
 var midi    = require('midi');
@@ -124,7 +86,7 @@ function saveLatestData(data) {
 	color = findClosestColor(rgb);
     if( lastColor == color ) return;
 
-    socket && socket.emit('RGB', rgbMessage( index, CONFIG.colors[color] ));
+    SOCKET.s && SOCKET.s.emit('RGB', rgbMessage( index, CONFIG.colors[color] ));
 
     var midiChannel = CONFIG.midiChannels[color == 'black' ? lastColor : color];
     midiOut.sendMessage([176, midiChannel, 1]);

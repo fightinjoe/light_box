@@ -33,4 +33,20 @@ CONFIG.midiChannels = {
 	water:  6
 };
 
+CONFIG.velocities = {
+	blue:      11,
+	yellow:    21,
+	red:       31,
+	aqua:      41,
+	green:     51,
+	water:     61,
+	morning:   71,
+	midday:    76,
+	afternoon: 81,
+	evening:   86,
+	blueout:   1,
+	party:     11,
+	blackout:  50
+}
+
 module.exports = CONFIG;
