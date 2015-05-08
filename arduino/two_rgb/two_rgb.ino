@@ -34,37 +34,42 @@ void loopSensor(int pin) {
     Serial.print("Sensor "); Serial.print(pin); Serial.println("");
     digitalWrite(pin, HIGH);
     Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_700MS, TCS34725_GAIN_1X);
-    for(int j = 0; j < 10; j++){
+    
+    for(int j = 0; j < 2; j++){
       sensorON(tcs, j);
+      // delay(1000);
     }
+    
     digitalWrite(pin, LOW);
 }
 
 // create function to call the sensor depending on the pin desired
 void sensorON(Adafruit_TCS34725 tcs, int index){
-  uint16_t r, g, b, c, colorTemp, lux;
-  // "pin" is determined in the main loop, and is the pin for the sensor that is getting powered on
+  //uint16_t r, g, b, c, colorTemp, lux;
+  uint16_t clear, red, green, blue;
 
-  // initialize sensor values each time the function gets called
-  // Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_700MS, TCS34725_GAIN_1X);
+//  tcs.getRawData(&r, &g, &b, &c);
 
-  // collect data from color sensor
-  tcs.getRawData(&r, &g, &b, &c);
-//  colorTemp = tcs.calculateColorTemperature(r, g, b);
-//  lux = tcs.calculateLux(r, g, b);
+//  if(index > 1) {
+//    Serial.print("#"); Serial.print(r,HEX); Serial.print(g,HEX); Serial.print(b,HEX); Serial.println("");
+//  }
+
+  delay(60);  // takes 50ms to read 
   
-  // display data
-  
-  /*  Serial.print("Color Temp: "); Serial.print(colorTemp, DEC); Serial.print(" K - ");
-  Serial.print("Lux: "); Serial.print(lux, DEC); Serial.print(" - ");
-  Serial.print("R: "); Serial.print(r, DEC); Serial.print(" ");
-  Serial.print("G: "); Serial.print(g, DEC); Serial.print(" ");
-  Serial.print("B: "); Serial.print(b, DEC); Serial.print(" ");
-  Serial.print("C: "); Serial.print(c, DEC); Serial.print(" ");
-  Serial.println(" ");*/
+  tcs.getRawData(&red, &green, &blue, &clear);
 
-  if(index > 1) {
-    Serial.print("#"); Serial.print(r,HEX); Serial.print(g,HEX); Serial.print(b,HEX); Serial.println("");
-  }
+  // Figure out some basic hex code for visualization
+  uint32_t sum = clear;
+  float r, g, b;
+  r = red; r /= sum;
+  g = green; g /= sum;
+  b = blue; b /= sum;
+  r *= 256; g *= 256; b *= 256;
+  
+  Serial.print(index);Serial.print(": ");
+  Serial.print((int)r);Serial.print(",");
+  Serial.print((int)g);Serial.print(",");
+  Serial.print((int)b);
+  Serial.println();
 
 }
