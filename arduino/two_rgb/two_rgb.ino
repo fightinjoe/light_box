@@ -36,7 +36,7 @@ void loopSensor(int pin) {
     Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_700MS, TCS34725_GAIN_1X);
     
     for(int j = 0; j < 2; j++){
-      sensorON(tcs, j);
+      sensorON(tcs, pin, j);
       // delay(1000);
     }
     
@@ -44,7 +44,7 @@ void loopSensor(int pin) {
 }
 
 // create function to call the sensor depending on the pin desired
-void sensorON(Adafruit_TCS34725 tcs, int index){
+void sensorON(Adafruit_TCS34725 tcs, int pin, int index){
   //uint16_t r, g, b, c, colorTemp, lux;
   uint16_t clear, red, green, blue;
 
@@ -66,7 +66,7 @@ void sensorON(Adafruit_TCS34725 tcs, int index){
   b = blue; b /= sum;
   r *= 256; g *= 256; b *= 256;
   
-  Serial.print(index);Serial.print(": ");
+  Serial.print("rgb ");Serial.print(pin);Serial.print(index);Serial.print(": ");
   Serial.print((int)r);Serial.print(",");
   Serial.print((int)g);Serial.print(",");
   Serial.print((int)b);

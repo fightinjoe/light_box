@@ -1,16 +1,8 @@
-/*
-36,83,109 - blue
-105,90,40 - yellow
-146,54,45 - red
-40,98,89  - aqua
-58,117,51 - green
-34,89,102 - blue
-104,69,69 - pink
-*/
+var CONFIG = require('./config')
 
 /*== Setup HTTP server ==*/
 var servi = require('servi');
-var html_server = new servi(true); // servi instance
+var html_server = new servi(true);  // servi instance
 html_server.port(8080);             // port number to run the server on
  
 // configure the server's behavior:
@@ -97,53 +89,44 @@ function distance(a, b) {
 	return Math.sqrt( Math.pow(a[0]-b[0],2) + Math.pow(a[1]-b[1],2) + Math.pow(a[2]-b[2],2));
 } 
 
-function rgbMessage( color ) {
-	return { hex: 'rgb('+color[0]+','+color[1]+','+color[2]+')' };
+function rgbMessage( i, color ) {
+	return { index: i, hex: 'rgb('+color[0]+','+color[1]+','+color[2]+')' };
 }
 
-var colors = {
-	blue:   [36,83,109],
-	yellow: [105,90,40],
-	red:    [146,54,45],
-	aqua:   [40,98,89],
-	green:  [58,117,51],
-	blue:   [34,89,102],
-	pink:   [104,69,69],
-	black:  [0,0,0]
-};
-
-var midiChannels = {
-	blue: 1,
-	yellow: 2,
-	red: 3,
-	aqua: 4,
-	green: 5
-};
-
-var maxDistance = distance( colors.red, colors.pink ) * 0.5;
+var maxDistance = distance( CONFIG.colors.blue, CONFIG.colors.water ) * 0.5;
 
 function findClosestColor( color ) {
-	if( distance(color, colors.blue)   < maxDistance ) return "blue";
-	if( distance(color, colors.yellow) < maxDistance ) return "yellow";
-	if( distance(color, colors.red)    < maxDistance ) return "red";
-	if( distance(color, colors.aqua)   < maxDistance ) return "aqua";
-	if( distance(color, colors.green)  < maxDistance ) return "green";
+	if( distance(color, CONFIG.colors.blue)   < maxDistance ) return "blue";
+	if( distance(color, CONFIG.colors.yellow) < maxDistance ) return "yellow";
+	if( distance(color, CONFIG.colors.red)    < maxDistance ) return "red";
+	if( distance(color, CONFIG.colors.aqua)   < maxDistance ) return "aqua";
+	if( distance(color, CONFIG.colors.green)  < maxDistance ) return "green";
+	if( distance(color, CONFIG.colors.water)  < maxDistance ) return "water";
 	return "black";
 }
 
 var lastColor = null;
 
 function saveLatestData(data) {
-    console.log(socket ? 'no socket' : data);
+    // console.log(socket ? 'no socket' : data);
     // data = JSON.parse(data);
-    data = data.split(',');
 
-    color = findClosestColor(data);
+    // check the message
+    var pieces = data.match(/rgb (\d)1: (\d+,\d+,\d+)/);
+
+	if( !pieces ) return;
+
+	var index = parseInt(pieces[1])-7;
+	var rgb   = pieces[2].split(',');
+
+    console.log(index, rgb);
+
+	color = findClosestColor(rgb);
     if( lastColor == color ) return;
 
-    socket && socket.emit('RGB', rgbMessage( colors[color] ));
+    socket && socket.emit('RGB', rgbMessage( index, CONFIG.colors[color] ));
 
-    var midiChannel = midiChannels[color == 'black' ? lastColor : color];
+    var midiChannel = CONFIG.midiChannels[color == 'black' ? lastColor : color];
     midiOut.sendMessage([176, midiChannel, 1]);
     lastColor = color;
 }
@@ -155,3 +138,6 @@ function showPortClose() {
 function showError(error) {
    console.log('Serial port error: ' + error);
 }
+
+
+// TODO: Time of day
