@@ -51,7 +51,7 @@ describe('LightChannel', function() {
 		});
 
 		it('send a socket message for the time of day before hours',function(){
-			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 0, 0, 0)).getTime() ); // Sunday
+			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 10, 59, 0)).getTime() ); // Sunday
 			var rgb = CONFIG.colors.blue;
 
 			lc.onMessage(rgb);
