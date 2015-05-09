@@ -18,9 +18,18 @@ function handler (req, res) {
   });
 }
 
-var socket = {s:null};
+var socket = null
 io.on('connection', function (s) {
-  socket.s = s;
+  socket = s;
+  s.sendMidi = function(h){
+    s.sendMessage([ s.cmd, s.channel, s.val]);
+  }
 });
 
-module.exports = socket;
+// module.exports = socket;
+module.exports = {
+  sendRGB : function(i, rgb) {
+    var message = { index: i, hex: 'rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')' };
+    socket && socket.emit('RGB', rgbMessage( index, CONFIG.colors[color] ));
+  }
+}

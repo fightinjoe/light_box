@@ -21,7 +21,14 @@ CONFIG.colors = {
 	water:  [34,92,108],
 	white:  [71,88,77],
 	pink:   [125,62,59],
-	black:  [0,0,0]
+	// black:  [0,0,0]
+};
+
+CONFIG.timeOfDay = {
+	morning:   [251, 220, 102], // soft yellow
+	midday:    [126, 251, 89],  // green
+	afternoon: [83, 176, 251],  // sky blue
+	evening:   [36, 2, 104]     // purple
 };
 
 CONFIG.midiChannels = {
@@ -47,6 +54,27 @@ CONFIG.velocities = {
 	blueout:   1,
 	party:     11,
 	blackout:  50
+}
+
+CONFIG.states = {
+	active : 'state-active',
+	party  : 'state-party',
+	blueout: 'state-blueout',
+	off    : 'state-off'
+}
+
+CONFIG.midi = {
+	blueout : { cmd: 176, channel: 4, val: 1 }
+}
+
+CONFIG.hours = {
+	0 : { min : 11, max: 20 }, // Sunday
+	1 : { min : 11, max: 21 },
+	2 : { min : 11, max: 21 },
+	3 : { min : 11, max: 21 },
+	4 : { min : 11, max: 21 },
+	5 : { min : 11, max: 21 },
+	6 : { min : 11, max: 21 }
 }
 
 module.exports = CONFIG;
