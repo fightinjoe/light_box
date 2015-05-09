@@ -39,7 +39,7 @@ describe('LightChannel', function() {
 	after(function(){ mockery.disable(); })
 
 	describe('lightChannel instance', function(){
-		it('send a socket message for the color during daytime hours',function(){
+		it('sends a socket message for the color during daytime hours at opening',function(){
 			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 11, 0, 0)).getTime() ); // Sunday
 			var rgb = CONFIG.colors.blue;
 
@@ -47,10 +47,32 @@ describe('LightChannel', function() {
 			expect( mock_midi.send.args[0][0] ).to.equal(2);
 			expect( mock_midi.send.args[0][1] ).to.equal( CONFIG.velocities.blue );
 
-			clock.restore()
+			clock.restore();
 		});
 
-		it('send a socket message for the time of day before hours',function(){
+		it('sends a MIDI message for the color during daytime hours at closing on Sunday',function(){
+			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 19, 59, 59)).getTime() ); // Sunday
+			var rgb = CONFIG.colors.blue;
+
+			lc.onMessage(rgb);
+			expect( mock_midi.send.args[0][0] ).to.equal(2);
+			expect( mock_midi.send.args[0][1] ).to.equal( CONFIG.velocities.blue );
+
+			clock.restore();
+		});
+
+		it('sends a MIDI message for the color during daytime hours at closing on Monday',function(){
+			var clock = sinon.useFakeTimers( (new Date(2015, 1, 2, 20, 59, 59)).getTime() ); // Monday
+			var rgb = CONFIG.colors.blue;
+
+			lc.onMessage(rgb);
+			expect( mock_midi.send.args[0][0] ).to.equal(2);
+			expect( mock_midi.send.args[0][1] ).to.equal( CONFIG.velocities.blue );
+
+			clock.restore();
+		});
+
+		it('sends a MIDI message for the time of day before hours',function(){
 			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 10, 59, 0)).getTime() ); // Sunday
 			var rgb = CONFIG.colors.blue;
 
@@ -59,9 +81,67 @@ describe('LightChannel', function() {
 			expect( mock_midi.send.args[0][1] ).to.equal( CONFIG.velocities.blueout );
 
 			clock.restore()
-
 		});
 
-		it('send a socket message for the time of day after hours',function(){});
+		it('sends a MIDI message for the time of day after hours',function(){
+			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 20, 00, 0)).getTime() ); // Sunday
+			var rgb = CONFIG.colors.blue;
+
+			lc.onMessage(rgb);
+			expect( mock_midi.send.args[0][0] ).to.equal(2);
+			expect( mock_midi.send.args[0][1] ).to.equal( CONFIG.velocities.blueout );
+
+			clock.restore()
+		});
+
+		it('only sends a MIDI message once for the same color', function() {
+			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 12, 00, 0)).getTime() ); // Sunday
+			var rgb = CONFIG.colors.blue;
+
+			lc.onMessage(rgb);
+			lc.onMessage(rgb);
+			
+			expect( mock_midi.send.args.length ).to.equal( 1 );
+
+			clock.restore();
+		});
+
+		it('sends separate MIDI messages for two different colors', function() {
+			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 12, 00, 0)).getTime() ); // Sunday
+			
+			lc.onMessage( CONFIG.colors.blue );
+			lc.onMessage( CONFIG.colors.red );
+			
+			expect( mock_midi.send.args.length ).to.equal( 2 );
+
+			clock.restore();
+		});
+
+		it('sends a party MIDI message when party mode is toggled', function() {
+			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 12, 00, 0)).getTime() ); // Sunday
+			
+			lc.togglePartyMode();
+			expect( mock_midi.send.args[0][1] ).to.equal( CONFIG.velocities.party );
+
+			// expect that subsequent calls don't issue more MIDI calls
+			lc.onMessage( CONFIG.colors.blue );
+			expect( mock_midi.send.args.length ).to.equal(1);
+
+			clock.restore();
+		});
+
+		it('goes back to normal when party mode is toggled off', function() {
+			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 12, 00, 0)).getTime() ); // Sunday
+			
+			lc.togglePartyMode();
+			lc.togglePartyMode();
+
+			// expect that subsequent calls don't issue more MIDI calls
+			lc.onMessage( CONFIG.colors.blue );
+			expect( mock_midi.send.args.length ).to.equal(2);
+			expect( mock_midi.send.args[0][1] ).to.equal( CONFIG.velocities.blue );
+
+			clock.restore();
+		});
 	})
 })

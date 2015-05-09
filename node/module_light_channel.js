@@ -24,6 +24,16 @@ var LightChannel = function( opts ) {
 		d ? handleColor(rgb, d) : handleSleep(rgb);
 	}
 
+	this.togglePartyMode = function() {
+		if( o.state == CONFIG.states.party ) {
+			o.state = CONFIG.states.active;
+			return;
+		}
+
+		o.state = CONFIG.states.party;
+		sendColor('party');
+	}
+
 	function isWorkingHours() {
 		var d = new Date();
 
@@ -42,6 +52,9 @@ var LightChannel = function( opts ) {
 
 		// don't issue any change commands if the color hasn't changed.
 	    if( o.color == color ) return;
+
+	    // cache the color
+	    o.color = color;
 
 	    sendSocketColor(color);
 	    sendColor(color);
@@ -70,10 +83,6 @@ var LightChannel = function( opts ) {
 							{ color = 'evening' }
 
 		return color;
-	}
-
-	function togglePartyMode() {
-		o.state = (o.state == CONFIG.states.party ? CONFIG.states.active : CONFIG.states.party);
 	}
 
 	function sendColor(color) {
