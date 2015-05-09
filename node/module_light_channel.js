@@ -11,6 +11,7 @@ var LightChannel = function( opts ) {
 	}
 
 	this.o = o;
+	this.MIDI = MIDI;
 
 	// This is the primary loop that reacts to data coming in from the sensors.
 	// rgb is an array of three values
@@ -56,6 +57,7 @@ var LightChannel = function( opts ) {
 	}
 
 	function sendSocketColor(color) {
+	 
 	    var rgb = CONFIG.colors[color] || CONFIG.timeOfDay[color];
 	    SOCKET.sendColor(rgb);
 	}
