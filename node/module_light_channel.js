@@ -20,12 +20,16 @@ var LightChannel = function( opts ) {
 		// if( o.state == CONFIG.states.party ) return;
 
 		var d = isWorkingHours();
+		// console.log('isWorkingHours', d);
 
 		d ? handleColor(rgb, d) : handleSleep(rgb);
 	}
 
 	this.onPartyMessage = function(channel) {
-		if( cacheColor('party') ) sendColor('party', {channel: channel});
+		if( !cacheColor('party') )  return;
+
+		sendColor('party', {channel: channel});
+		sendSocketColor('party');
 	}
 
 	function isWorkingHours() {
@@ -38,7 +42,7 @@ var LightChannel = function( opts ) {
 	}
 
 	function cacheColor(color) {
-		// console.log('cacheColor',color, o.color);
+		console.log('cacheColor',color, o.color);
 		if( o.color == color ) return;
 		o.color = color;
 		return color;
@@ -84,10 +88,10 @@ var LightChannel = function( opts ) {
 
 	function getTimeOfDayColor(d) {
 		var color;
-		if(d.getHours < 11) { color = 'morning' }   else
-		if(d.getHours < 15) { color = 'midday' }    else
-		if(d.getHours < 19) { color = 'afternoon' } else
-							{ color = 'evening' }
+		if(d.getHours() < 12) { color = 'morning' }   else
+		if(d.getHours() < 15) { color = 'midday' }    else
+		if(d.getHours() < 19) { color = 'afternoon' } else
+							  { color = 'evening' }
 
 		return color;
 	}
@@ -102,16 +106,33 @@ var LightChannel = function( opts ) {
 		return Math.sqrt( Math.pow(a[0]-b[0],2) + Math.pow(a[1]-b[1],2) + Math.pow(a[2]-b[2],2));
 	} 
 
-	var maxDistance = distance( CONFIG.colors.blue, CONFIG.colors.water ) * 0.5;
+	var maxDistance = 16; //distance( CONFIG.colors.blue, CONFIG.colors.water ) * 0.5;
 
 	function findClosestColor( rgb ) {
-		if( distance(rgb, CONFIG.colors.blue)   < maxDistance ) return "blue";
-		if( distance(rgb, CONFIG.colors.yellow) < maxDistance ) return "yellow";
-		if( distance(rgb, CONFIG.colors.red)    < maxDistance ) return "red";
-		if( distance(rgb, CONFIG.colors.aqua)   < maxDistance ) return "aqua";
-		if( distance(rgb, CONFIG.colors.green)  < maxDistance ) return "green";
-		if( distance(rgb, CONFIG.colors.water)  < maxDistance ) return "water";
-		return null;
+		var c = 'blue';
+		var d = distance(rgb, CONFIG.colors.blue);
+
+		var d1;
+		function compare(newColor) {
+			d1 = distance(rgb, CONFIG.colors[newColor]);
+			if( d1 > d ) return;
+			c = newColor;
+			d = d1;
+		}
+
+		compare('yellow');
+		compare('red');
+		compare('aqua');
+		compare('green');
+		compare('water');
+
+		// if( distance(rgb, CONFIG.colors.blue)   < maxDistance ) return "blue";
+		// if( distance(rgb, CONFIG.colors.yellow) < maxDistance ) return "yellow";
+		// if( distance(rgb, CONFIG.colors.red)    < maxDistance ) return "red";
+		// if( distance(rgb, CONFIG.colors.aqua)   < maxDistance ) return "aqua";
+		// if( distance(rgb, CONFIG.colors.green)  < maxDistance ) return "green";
+		// if( distance(rgb, CONFIG.colors.water)  < maxDistance ) return "water";
+		return d > maxDistance ? null : c;
 	}
 }
 
