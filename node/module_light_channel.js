@@ -65,6 +65,9 @@ var LightChannel = function( opts ) {
 
 		if( color == o.color ) return;
 
+		// cache the color to prevent sending the message multiple times
+		o.color = color;
+
 		sendSocketColor(color);
 		sendColor(color);
 	}

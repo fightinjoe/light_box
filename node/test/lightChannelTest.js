@@ -102,12 +102,28 @@ describe('LightChannel', function() {
 			expect( mock_midi.send.args[0][0] ).to.equal(2);
 			expect( mock_midi.send.args[0][1] ).to.equal( CONFIG.velocities.blueout );
 
+			// make sure that the message is only sent once
+			lc.onMessage(rgb);
+			expect( mock_midi.send.calledOnce ).to.equal(true);
+
 			clock.restore()
 		});
 
 		it('only sends a MIDI message once for the same color', function() {
 			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 12, 00, 0)).getTime() ); // Sunday
 			var rgb = CONFIG.colors.blue;
+
+			lc.onMessage(rgb);
+			lc.onMessage(rgb);
+			
+			expect( mock_midi.send.args.length ).to.equal( 1 );
+
+			clock.restore();
+		});
+
+		it('only sends a MIDI message once for black', function() {
+			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 12, 00, 0)).getTime() ); // Sunday
+			var rgb = CONFIG.colors.black;
 
 			lc.onMessage(rgb);
 			lc.onMessage(rgb);
