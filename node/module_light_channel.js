@@ -70,9 +70,8 @@ var LightChannel = function( opts ) {
 	}
 
 	function sendSocketColor(color) {
-	 
-	    var rgb = CONFIG.colors[color] || CONFIG.timeOfDay[color];
-	    SOCKET.sendColor(rgb);
+	 	var rgb = CONFIG.colors[color] || CONFIG.timeOfDay[color] || [0,0,0];
+	    SOCKET.sendRGB(rgb, o.channel);
 	}
 
 	function getTimeOfDayColor(d) {

@@ -26,10 +26,14 @@ io.on('connection', function (s) {
   }
 });
 
+// function rgbMessage( i, rgb ) {
+//   return { index: i, hex: 'rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')' };
+// }
+
 // module.exports = socket;
 module.exports = {
-  sendRGB : function(i, rgb) {
+  sendRGB : function(rgb, i) {
     var message = { index: i, hex: 'rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')' };
-    socket && socket.emit('RGB', rgbMessage( index, CONFIG.colors[color] ));
+    socket && socket.emit('RGB', message);
   }
 }

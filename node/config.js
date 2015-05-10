@@ -21,7 +21,7 @@ CONFIG.colors = {
 	water:  [34,92,108],
 	white:  [71,88,77],
 	pink:   [125,62,59],
-	// black:  [0,0,0]
+	black:  [0,0,0]
 };
 
 CONFIG.timeOfDay = {

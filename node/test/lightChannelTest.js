@@ -17,7 +17,7 @@ describe('LightChannel', function() {
 		    warnOnUnregistered: false
 		});
 
-		mock_socket = {sendColor:sinon.spy()};
+		mock_socket = {sendRGB:sinon.spy()};
 		mock_midi = {send:sinon.spy()};
 
 		mockery.registerMock('./module_socket', mock_socket);
@@ -32,19 +32,30 @@ describe('LightChannel', function() {
 
     afterEach(function() {
         mockery.deregisterAll();    // Deregister all Mockery mocks from node's module cache
-    	mock_socket.sendColor.reset();
+    	mock_socket.sendRGB.reset();
 		mock_midi.send.reset();
     });
 
 	after(function(){ mockery.disable(); })
 
 	describe('lightChannel instance', function(){
-		it('sends a socket message for the color during daytime hours at opening',function(){
+		it('sends a MIDI message for the color during daytime hours at opening',function(){
 			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 11, 0, 0)).getTime() ); // Sunday
 			var rgb = CONFIG.colors.blue;
 
 			lc.onMessage(rgb);
 			expect( mock_midi.send.args[0][0] ).to.equal(2);
+			expect( mock_midi.send.args[0][1] ).to.equal( CONFIG.velocities.blue );
+
+			clock.restore();
+		});
+
+		it('sends a socket message for the color during daytime hours at opening',function(){
+			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 11, 0, 0)).getTime() ); // Sunday
+			var rgb = CONFIG.colors.blue;
+
+			lc.onMessage(rgb);
+			expect( mock_socket.sendRGB.calledOnce ).to.equal(true);
 			expect( mock_midi.send.args[0][1] ).to.equal( CONFIG.velocities.blue );
 
 			clock.restore();
@@ -143,5 +154,17 @@ describe('LightChannel', function() {
 
 			clock.restore();
 		});
+
+		it('sends a message for Red when the color close to red', function() {
+			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 11, 0, 0)).getTime() ); // Sunday
+			var rgb = [169,48,42];
+
+			lc.onMessage(rgb);
+			expect( mock_midi.send.args[0][0] ).to.equal(2);
+			expect( mock_midi.send.args[0][1] ).to.equal( CONFIG.velocities.red );
+			expect( mock_socket.sendRGB.args[0][0] ).to.equal( CONFIG.colors.red );
+
+			clock.restore();
+		})
 	})
 })

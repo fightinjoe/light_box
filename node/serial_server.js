@@ -3,8 +3,6 @@ var HTTP   = require('./module_http');
 var SERIAL = require('./module_serial');
 var LightChannel = require('./module_light_channel');
 
-
-
 // function rgbMessage( i, color ) {
 // 	return { index: i, hex: 'rgb('+color[0]+','+color[1]+','+color[2]+')' };
 // }
@@ -15,7 +13,8 @@ var lights = {
 	stage : new LightChannel({channel:1})
 }
 
-SERIAL.onMessage = function(data) {
+SERIAL.o.callback = function(data) {
+	console.log(data);
 	// TODO: add in support for party mode
 	if( data.match(/partymode/) ) {
 		lights[0].togglePartyMode();
@@ -36,4 +35,4 @@ SERIAL.onMessage = function(data) {
 	lights['stage'].onMessage([0,0,0]);
 
     console.log(index, rgb);
-}
+};
