@@ -3,12 +3,6 @@ var serialport = require("serialport");
 var SerialPort = serialport.SerialPort;
 var portName   = process.argv[2] // alternatively pass in 'autoconnect'
 
-if( !portName ) {
-	console.log("No port name was supplied.  Please supply one of the following ports as the second parameter.");
-	listPorts('  ');
-	return;
-}
-
 var Serial = function(pName) {
 	var o = {
 		port : null,
@@ -71,6 +65,12 @@ Serial.listPorts = function( indent ) {
 			console.log(indent + port.comName);
 		});
 	});
+}
+
+if( !portName ) {
+	console.log("No port name was supplied.  Please supply one of the following ports as the second parameter.");
+	Serial.listPorts('  ');
+	return;
 }
 
 module.exports = new Serial(portName);

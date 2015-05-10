@@ -20,7 +20,7 @@
   	document.querySelector('#color')
   ];
 
-  var socket = io('http://localhost');
+  var socket = io('http://localhost:8081');
 
   socket.on('RGB', function (data) {
     console.log(data.index, data.rgb);
