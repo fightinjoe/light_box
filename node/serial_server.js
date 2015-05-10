@@ -14,12 +14,13 @@ var lights = {
 }
 
 SERIAL.o.callback = function(data) {
-	console.log(data);
-	// TODO: add in support for party mode
+	if(data != '44') console.log(data);
+	
 	if( data.match(/partymode/) ) {
-		lights[0].togglePartyMode();
-		lights[1].togglePartyMode();
-		lights.stage.togglePartyMode();
+		lights[0].onPartyMessage(4);
+		lights[1].onPartyMessage(16);
+		lights.stage.onPartyMessage(16);
+		return;
 	}
 
 	var pieces = data.match(/rgb (\d)1: (\d+,\d+,\d+)/);

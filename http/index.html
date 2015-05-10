@@ -23,9 +23,9 @@
   var socket = io('http://localhost');
 
   socket.on('RGB', function (data) {
-    console.log(data.hex);
+    console.log(data.rgb);
     // box.style.backgroundColor = "Red"
-    boxes[data.index].style.backgroundColor = data.hex;
+    boxes[data.index-1].style.backgroundColor = data.rgb;
     // socket.emit('my other event', { my: 'data' });
   });
 

@@ -67,7 +67,7 @@ void sensorON(Adafruit_TCS34725 tcs, int pin, int index){
   
   if( checkSwitch() ) {
       Serial.println("partymode");
-  } else { 
+  } else if(index == 1) { 
       Serial.print("rgb ");Serial.print(pin);Serial.print(index);Serial.print(": ");
       Serial.print((int)r);Serial.print(",");
       Serial.print((int)g);Serial.print(",");

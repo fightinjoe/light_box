@@ -17,21 +17,15 @@ var LightChannel = function( opts ) {
 	// rgb is an array of three values
 	this.onMessage = function(rgb) {
 		// ignore the time of day and RGB sensor data if party mode is engaged
-		if( o.state == CONFIG.states.party ) return;
+		// if( o.state == CONFIG.states.party ) return;
 
 		var d = isWorkingHours();
 
 		d ? handleColor(rgb, d) : handleSleep(rgb);
 	}
 
-	this.togglePartyMode = function() {
-		if( o.state == CONFIG.states.party ) {
-			o.state = CONFIG.states.active;
-			return;
-		}
-
-		o.state = CONFIG.states.party;
-		sendColor('party');
+	this.onPartyMessage = function(channel) {
+		if( cacheColor('party') ) sendColor('party', {channel: channel});
 	}
 
 	function isWorkingHours() {
@@ -43,6 +37,13 @@ var LightChannel = function( opts ) {
 		return d;
 	}
 
+	function cacheColor(color) {
+		// console.log('cacheColor',color, o.color);
+		if( o.color == color ) return;
+		o.color = color;
+		return color;
+	}
+
 	function handleColor(rgb, d) {
 		// Finds the color closest to the app specifics, returns null otherwise
 		color = findClosestColor(rgb);
@@ -51,25 +52,29 @@ var LightChannel = function( opts ) {
 		if( !color ) color = getTimeOfDayColor(d);
 
 		// don't issue any change commands if the color hasn't changed.
-	    if( o.color == color ) return;
+	    // if( o.color == color ) return;
 
 	    // cache the color
-	    o.color = color;
+	    // o.color = color;
 
-	    sendSocketColor(color);
-	    sendColor(color);
+	    if( cacheColor(color) ) {
+		    sendSocketColor(color);
+		    sendColor(color);
+	    }
 	}
 
 	function handleSleep() {
 		color = 'blueout';
 
-		if( color == o.color ) return;
+		// if( color == o.color ) return;
 
 		// cache the color to prevent sending the message multiple times
-		o.color = color;
+		// o.color = color;
 
-		sendSocketColor(color);
-		sendColor(color);
+		if( cacheColor( color ) ) {
+			sendSocketColor(color);
+			sendColor(color);
+		}
 	}
 
 	function sendSocketColor(color) {
@@ -87,8 +92,10 @@ var LightChannel = function( opts ) {
 		return color;
 	}
 
-	function sendColor(color) {
-		MIDI.send(o.channel, CONFIG.velocities[color]);
+	function sendColor(color, opts) {
+		opts = opts || {};
+		var channel = opts.channel || o.channel;
+		MIDI.send(channel, CONFIG.velocities[color]);
 	}
 
 	function distance(a, b) {
@@ -97,13 +104,13 @@ var LightChannel = function( opts ) {
 
 	var maxDistance = distance( CONFIG.colors.blue, CONFIG.colors.water ) * 0.5;
 
-	function findClosestColor( color ) {
-		if( distance(color, CONFIG.colors.blue)   < maxDistance ) return "blue";
-		if( distance(color, CONFIG.colors.yellow) < maxDistance ) return "yellow";
-		if( distance(color, CONFIG.colors.red)    < maxDistance ) return "red";
-		if( distance(color, CONFIG.colors.aqua)   < maxDistance ) return "aqua";
-		if( distance(color, CONFIG.colors.green)  < maxDistance ) return "green";
-		if( distance(color, CONFIG.colors.water)  < maxDistance ) return "water";
+	function findClosestColor( rgb ) {
+		if( distance(rgb, CONFIG.colors.blue)   < maxDistance ) return "blue";
+		if( distance(rgb, CONFIG.colors.yellow) < maxDistance ) return "yellow";
+		if( distance(rgb, CONFIG.colors.red)    < maxDistance ) return "red";
+		if( distance(rgb, CONFIG.colors.aqua)   < maxDistance ) return "aqua";
+		if( distance(rgb, CONFIG.colors.green)  < maxDistance ) return "green";
+		if( distance(rgb, CONFIG.colors.water)  < maxDistance ) return "water";
 		return null;
 	}
 }

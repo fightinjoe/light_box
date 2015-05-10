@@ -9,6 +9,7 @@ midiOut.openPort(0);
 
 module.exports = {
 	send : function(channel, value, control) {
+		console.log('sending MIDI');
 		control = control || 176;
 		midiOut.sendMessage([control, channel, value]);
 	}

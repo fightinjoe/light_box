@@ -33,7 +33,7 @@ io.on('connection', function (s) {
 // module.exports = socket;
 module.exports = {
   sendRGB : function(rgb, i) {
-    var message = { index: i, hex: 'rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')' };
+    var message = { index: i, rgb: 'rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')' };
     socket && socket.emit('RGB', message);
   }
 }

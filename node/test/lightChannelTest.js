@@ -147,21 +147,23 @@ describe('LightChannel', function() {
 		it('sends a party MIDI message when party mode is toggled', function() {
 			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 12, 00, 0)).getTime() ); // Sunday
 			
-			lc.togglePartyMode();
+			lc.onPartyMessage();
+			// lc.onMessage( CONFIG.colors.blue );
+			// expect( lc.o.state ).to.equal( CONFIG.states.party );
 			expect( mock_midi.send.args[0][1] ).to.equal( CONFIG.velocities.party );
+			expect( mock_midi.send.args[0][0] ).to.equal(4);
 
 			// expect that subsequent calls don't issue more MIDI calls
-			lc.onMessage( CONFIG.colors.blue );
+			lc.onPartyMessage();
 			expect( mock_midi.send.args.length ).to.equal(1);
-
 			clock.restore();
 		});
 
 		it('goes back to normal when party mode is toggled off', function() {
 			var clock = sinon.useFakeTimers( (new Date(2015, 1, 1, 12, 00, 0)).getTime() ); // Sunday
 			
-			lc.togglePartyMode();
-			lc.togglePartyMode();
+			lc.onPartyMessage();
+			// lc.togglePartyMode();
 
 			// expect that subsequent calls don't issue more MIDI calls
 			lc.onMessage( CONFIG.colors.blue );
@@ -179,6 +181,14 @@ describe('LightChannel', function() {
 			expect( mock_midi.send.args[0][0] ).to.equal(2);
 			expect( mock_midi.send.args[0][1] ).to.equal( CONFIG.velocities.red );
 			expect( mock_socket.sendRGB.args[0][0] ).to.equal( CONFIG.colors.red );
+
+			// green
+			rgb = [67,123,54];
+
+			lc.onMessage(rgb);
+			expect( mock_midi.send.args[1][0] ).to.equal(2);
+			expect( mock_midi.send.args[1][1] ).to.equal( CONFIG.velocities.green );
+			expect( mock_socket.sendRGB.args[1][0] ).to.equal( CONFIG.colors.green );
 
 			clock.restore();
 		})
