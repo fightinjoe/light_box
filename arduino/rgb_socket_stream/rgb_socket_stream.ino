@@ -15,10 +15,14 @@
 // our RGB -> eye-recognized gamma color
 byte gammatable[256];
 
+int sensorA = 8;
 
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 
 void setup() {
+  pinMode(sensorA, OUTPUT);
+  digitalWrite(sensorA, HIGH);
+
   Serial.begin(9600);
   Serial.println("Color View Test!");
 
@@ -28,6 +32,8 @@ void setup() {
     Serial.println("No TCS34725 found ... check your connections");
     while (1); // halt!
   }
+  
+  Serial.println("Got here");
   
   // use these three pins to drive an LED
   pinMode(redpin, OUTPUT);

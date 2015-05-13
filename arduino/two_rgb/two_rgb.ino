@@ -23,6 +23,8 @@ void setup(void) {
 
   pinMode(ledPin, OUTPUT);
   pinMode(switchPin, INPUT);
+  
+  digitalWrite(sensorA, HIGH);
 }
 
 void loop(void) {
@@ -67,7 +69,7 @@ void sensorON(Adafruit_TCS34725 tcs, int pin, int index){
   
   if( checkSwitch() ) {
       Serial.println("partymode");
-  } else if(index == 1) { 
+  } else if(index == 2) { 
       Serial.print("rgb ");Serial.print(pin);Serial.print(index);Serial.print(": ");
       Serial.print((int)r);Serial.print(",");
       Serial.print((int)g);Serial.print(",");

@@ -31,7 +31,10 @@ var Serial = function(pName) {
 	}
 
 	this.reload = function() {
-		connect(o.name);
+		console.log("!!! RELOADING SERIAL !!!");
+		o.port.close(function(){
+			connect(o.name);			
+		})
 	}
 
 	function autoconnect() {

@@ -1,0 +1,9 @@
+{
+  "name": "muji-lights",
+  "version": "1.0",
+  "description": "Lighting for the Muji project",
+  "author": "Aaron Wheeler <fightinjoe@gmail.com>",
+  "dependencies": {
+    "winston": "*"
+  }
+}

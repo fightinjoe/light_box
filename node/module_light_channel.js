@@ -16,6 +16,7 @@ var LightChannel = function( opts ) {
 	// This is the primary loop that reacts to data coming in from the sensors.
 	// rgb is an array of three values
 	this.onMessage = function(rgb) {
+		console.log('on message');
 		try {
 			var d = isWorkingHours();
 			// console.log('isWorkingHours', d);
@@ -44,7 +45,7 @@ var LightChannel = function( opts ) {
 
 	function cacheColor(color) {
 		console.log('cacheColor',color, o.color);
-		// if( o.color == color ) return;
+		if( o.color == color ) return;
 		o.color = color;
 		return color;
 	}
@@ -107,7 +108,7 @@ var LightChannel = function( opts ) {
 		return Math.sqrt( Math.pow(a[0]-b[0],2) + Math.pow(a[1]-b[1],2) + Math.pow(a[2]-b[2],2));
 	} 
 
-	var maxDistance = 16; //distance( CONFIG.colors.blue, CONFIG.colors.water ) * 0.5;
+	var maxDistance = 20; //distance( CONFIG.colors.blue, CONFIG.colors.water ) * 0.5;
 
 	function findClosestColor( rgb ) {
 		var c = 'blue';

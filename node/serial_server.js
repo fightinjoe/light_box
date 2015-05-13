@@ -15,7 +15,7 @@ var lights = {
 
 function heartbeat() {
 	// MIDI heartbeat
-	lights[0].MIDI.send(132,132,132);
+	// lights[0].MIDI.send(132,132,132);
 
 	// Serial heartbeat
 	if( SERIAL.checkHealth() > 3000 ) { SERIAL.reload() };
