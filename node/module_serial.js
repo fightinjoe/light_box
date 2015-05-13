@@ -5,14 +5,17 @@ var portName   = process.argv[2] // alternatively pass in 'autoconnect'
 
 var Serial = function(pName) {
 	var o = {
+		name : null,
 		port : null,
-		callback : null
+		callback : null,
+		timeSinceLast : Date.now()
 	}
 
 	this.o = o;
 
 	function connect(name) {
-		o.port = new SerialPort(name, {
+		o.name = (name || o.name);
+		o.port = new SerialPort(o.name, {
 		   baudRate: 9600,
 		   parser: serialport.parsers.readline("\r\n")
 		});	
@@ -27,10 +30,18 @@ var Serial = function(pName) {
 		}
 	}
 
+	this.reload = function() {
+		connect(o.name);
+	}
+
 	function autoconnect() {
+		var self = this;
 		serialport.list(function (err, ports) {
 			ports.forEach(function(port) {
-				if( port.comName.match(/\/dev\/cu.usbmodem/) ) return connect(port.comName);
+				if( port.comName.match(/\/dev\/cu.usbmodem/) ) {
+					console.log('SERIAL', 'connecting to port', port);
+					return connect(port.comName);
+				}
 			});
 		});
 	}
@@ -40,6 +51,7 @@ var Serial = function(pName) {
 	}
 
 	function saveLatestData(data) {
+		o.timeSinceLast = Date.now();
 		if(o.callback) o.callback(data);
 	}
 	 
@@ -49,6 +61,12 @@ var Serial = function(pName) {
 	 
 	function showError(error) {
 	   console.log('Serial port error: ' + error);
+	}
+
+	this.checkHealth = function() {
+		var duration = Date.now() - o.timeSinceLast;
+		console.log('SERIAL', 'check health - since last message:', duration);
+		return duration;
 	}
 
 	function init() {

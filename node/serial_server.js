@@ -8,10 +8,22 @@ var LightChannel = require('./module_light_channel');
 // }
 
 var lights = {
-	0 : new LightChannel({channel:2}),
-	1 : new LightChannel({channel:3}),
+	0     : new LightChannel({channel:2}),
+	1     : new LightChannel({channel:3}),
 	stage : new LightChannel({channel:1})
 }
+
+function heartbeat() {
+	// MIDI heartbeat
+	lights[0].MIDI.send(132,132,132);
+
+	// Serial heartbeat
+	if( SERIAL.checkHealth() > 3000 ) { SERIAL.reload() };
+}
+
+setInterval(heartbeat, 3000);
+
+if(!SERIAL.o) return;
 
 SERIAL.o.callback = function(data) {
 	if(data != '44') console.log(data);
@@ -23,7 +35,7 @@ SERIAL.o.callback = function(data) {
 		return;
 	}
 
-	var pieces = data.match(/rgb (\d)1: (\d+,\d+,\d+)/);
+	var pieces = data.match(/rgb (\d)2: (\d+,\d+,\d+)/);
 
 	if( !pieces ) return;
 

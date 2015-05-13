@@ -1,5 +1,5 @@
 var CONFIG = require('./config');
-var SOCKET = require('./module_socket');
+// var SOCKET = require('./module_socket');
 var MIDI   = require('./module_midi');
 
 var LightChannel = function( opts ) {
@@ -16,13 +16,14 @@ var LightChannel = function( opts ) {
 	// This is the primary loop that reacts to data coming in from the sensors.
 	// rgb is an array of three values
 	this.onMessage = function(rgb) {
-		// ignore the time of day and RGB sensor data if party mode is engaged
-		// if( o.state == CONFIG.states.party ) return;
+		try {
+			var d = isWorkingHours();
+			// console.log('isWorkingHours', d);
 
-		var d = isWorkingHours();
-		// console.log('isWorkingHours', d);
-
-		d ? handleColor(rgb, d) : handleSleep(rgb);
+			d ? handleColor(rgb, d) : handleSleep(rgb);
+		} catch(e) {
+			console.log('!!! LightChannel error', e);
+		}
 	}
 
 	this.onPartyMessage = function(channel) {
@@ -43,7 +44,7 @@ var LightChannel = function( opts ) {
 
 	function cacheColor(color) {
 		console.log('cacheColor',color, o.color);
-		if( o.color == color ) return;
+		// if( o.color == color ) return;
 		o.color = color;
 		return color;
 	}
@@ -83,7 +84,7 @@ var LightChannel = function( opts ) {
 
 	function sendSocketColor(color) {
 	 	var rgb = CONFIG.colors[color] || CONFIG.timeOfDay[color] || [0,0,0];
-	    SOCKET.sendRGB(rgb, o.channel);
+	    // SOCKET.sendRGB(rgb, o.channel);
 	}
 
 	function getTimeOfDayColor(d) {

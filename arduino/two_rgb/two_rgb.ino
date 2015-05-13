@@ -35,7 +35,7 @@ void loopSensor(int pin) {
     digitalWrite(pin, HIGH);
     Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_700MS, TCS34725_GAIN_1X);
     
-    for(int j = 0; j < 2; j++){
+    for(int j = 0; j < 3; j++){
       sensorON(tcs, pin, j);
       // delay(1000);
     }
